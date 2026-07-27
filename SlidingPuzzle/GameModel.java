@@ -9,7 +9,7 @@ public class GameModel
     // Interval value used to represent the empty field.
     private static final int EMPTY = -1;
 
-    // Number of rows and colums of the square board.
+    // Number of rows and columns of the square board.
     // Valid values are 3, 4, 5.
     private int size;
 
@@ -19,7 +19,7 @@ public class GameModel
     // current row position of the empty field.
     private int emptyRow;
 
-    // current colum position of the empty field.
+    // current column position of the empty field.
     private int emptyCol;
 
     /**
@@ -28,7 +28,7 @@ public class GameModel
      * The board is first initialized in the solved state
      * and then shuffled using valid puzzle moves.
      * 
-     * @param size the number of rows and colums
+     * @param size the number of rows and columns
      * @throws IllegalArgumentException if the size is not 3, 4 or 5
      */
 
@@ -87,7 +87,7 @@ public class GameModel
         
         /**
          * Stores the previous position of the empty field.
-         * Ths prevents the next random move from immediately
+         * This prevents the next random move from immediately
          * undoing the previous move.
          */
         int previousEmptyRow = -1;
@@ -100,14 +100,14 @@ public class GameModel
             int direction = (int) (Math.random() * 4);
             
             /**
-             * A tile at this target positio would move
+             * A tile at this target position would move
              * into the current empty field.
              */
             int targetRow = emptyRow + rowDirections[direction];
             int targetCol = emptyCol + colDirections[direction];
             
             // Ignore positions outside the board.
-            if(!isInsideBorad(targetRow, targetCol)) {
+            if(!isInsideBoard(targetRow, targetCol)) {
                 continue;
             }
             
@@ -147,8 +147,8 @@ public class GameModel
      * the board remains unchanged.
      * 
      * @param row row position of the selected tile
-     * @param col colum position of the selected tile
-     * @return true if the tile was moved, otherwisse false
+     * @param col column position of the selected tile
+     * @return true if the tile was moved, otherwise false
      */
     public boolean move(int row, int col) {
         if(!canMove(row, col)) {
@@ -169,14 +169,14 @@ public class GameModel
      * Checks whether the tile at the given position can move
      * into the empty field.
      * 
-     * A title can only move if it is directly above, below, left or right of the empty feild.
+     * A tile can only move if it is directly above, below, left or right of the empty field.
      * 
      * @param row row position of the selected tile
-     * @param col colum position of the selected tile
+     * @param col column position of the selected tile
      * @return true if the tile can move, otherwise false
      */
     public boolean canMove(int row, int col) {
-        if(!isInsideBorad(row, col)) {
+        if(!isInsideBoard(row, col)) {
             return false;
         }
         
@@ -190,7 +190,7 @@ public class GameModel
         
         /**
          * A Manhattan distance of exactly one means that
-         * he tile is directly next to the empty field.
+         * the tile is directly next to the empty field.
          */
         return rowDistance + colDistance == 1;
     }
@@ -198,7 +198,7 @@ public class GameModel
     /**
      * Checks whether a position is located inside the board.
      */
-    private boolean isInsideBorad(int row, int col) {
+    private boolean isInsideBoard(int row, int col) {
         return row >= 0 && row < size && col >= 0 && col < size;
     }
     
@@ -239,7 +239,7 @@ public class GameModel
      * @throws IndexOutOfBoundsException if the position is invalid
      */
     public int getValueAt(int row, int col) {
-        if(!isInsideBorad(row, col)) {
+        if(!isInsideBoard(row, col)) {
             throw new IndexOutOfBoundsException("Invalid board position.");
         }
         
