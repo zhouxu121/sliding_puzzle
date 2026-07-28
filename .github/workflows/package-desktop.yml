@@ -67,10 +67,30 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          choco install wixtoolset --version=3.11.2 --no-progress --yes
-          $wix_bin = "${env:ProgramFiles(x86)}\WiX Toolset v3.11\bin"
+          $wix_path = Get-ChildItem `
+            -Path "${env:ProgramFiles(x86)}\WiX Toolset*" `
+            -Directory `
+            -ErrorAction SilentlyContinue |
+            Sort-Object Name -Descending |
+            Select-Object -First 1
+
+          if ($null -eq $wix_path) {
+            choco install wixtoolset --no-progress --yes
+            $wix_path = Get-ChildItem `
+              -Path "${env:ProgramFiles(x86)}\WiX Toolset*" `
+              -Directory `
+              -ErrorAction SilentlyContinue |
+              Sort-Object Name -Descending |
+              Select-Object -First 1
+          }
+
+          if ($null -eq $wix_path) {
+            throw "WiX Toolset installation directory was not found."
+          }
+
+          $wix_bin = Join-Path $wix_path.FullName "bin"
           if (!(Test-Path $wix_bin)) {
-            throw "WiX was not installed at $wix_bin"
+            throw "WiX Toolset bin directory was not found: $wix_bin"
           }
           $wix_bin | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
