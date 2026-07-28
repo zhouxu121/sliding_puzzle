@@ -51,6 +51,8 @@ build/
 out/
 bin/
 target/
+dist/
+release/
 
 # ------------------------------------------------------------
 # Keep important BlueJ and source files
