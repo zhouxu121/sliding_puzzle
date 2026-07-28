@@ -1,33 +1,27 @@
 # Sliding Puzzle
 
-A Java Swing implementation of the classic sliding-puzzle game.
+[中文](README.zh-CN.md) | **English** | [Deutsch](README.de.md)
 
-This project was developed as a Java programming assignment. It keeps the game rules separate from the graphical interface and currently provides a playable number-puzzle mode.
+A Java Swing implementation of the classic sliding-puzzle game. Play with numbered tiles or turn your own image into a puzzle.
 
 ## Current status
 
-**v0.1.0 — first playable version**
+**v1.1.0 — image-puzzle mode**
 
-The number-puzzle mode is ready to play. The image menu can select an image file, but image-based puzzles have not been implemented yet.
+The project provides a playable number-puzzle mode and an image-puzzle mode. Upload a JPG, JPEG, or PNG image to divide it into movable puzzle tiles; use **Show Numbers** to return to the numbered display without resetting the current game.
 
 ## Features
 
 - 3 × 3, 4 × 4, and 5 × 5 boards
 - Solvable random puzzle generation using valid moves
-- Tile movement validation
-- Step counter
-- Difficulty selection
-- Restart current game
+- Number-puzzle and image-puzzle modes
+- Upload JPG, JPEG, and PNG images
+- Automatically scaled 600 × 600 image board with seamless tiles
+- Switch between image and number display without losing the current board state
+- Tile movement validation and step counter
+- Difficulty selection and restart current game
 - Win detection and completion dialog
-- Java Swing desktop interface
-- Separate game model and GUI classes
-
-## Planned features
-
-- Split a selected image into puzzle tiles
-- Image-puzzle mode
-- Improved visual design
-- Executable releases and native installers
+- Java Swing desktop interface with separate game model and GUI classes
 
 ## Requirements
 
@@ -68,9 +62,11 @@ java Main
 ## How to play
 
 1. Choose a board size from the difficulty menu.
-2. Click a numbered tile directly next to the empty field.
+2. Click a tile directly next to the empty field.
 3. The tile moves into the empty field and the step counter increases.
 4. Arrange the tiles in ascending order from left to right and top to bottom.
+
+To play with an image, choose **Upload Image** from the menu and select a JPG, JPEG, or PNG file. The current arrangement and step count remain unchanged. Choose **Show Numbers** to switch back to the number-puzzle display.
 
 Solved 3 × 3 board:
 
@@ -92,8 +88,9 @@ sliding_puzzle/
 │   ├── GameModel.java     # Puzzle rules and board state
 │   └── package.bluej      # BlueJ project configuration
 ├── .gitignore
-├── README.md
-└── README.zh-CN.md
+├── README.md              # English
+├── README.zh-CN.md        # Chinese
+└── README.de.md           # German
 ```
 
 ## Main classes
@@ -104,7 +101,7 @@ Contains the game logic. It creates a solved board, shuffles it through valid mo
 
 ### `GameJFrame`
 
-Contains the Swing interface. It displays the board and step count, handles tile clicks, provides the difficulty and restart menu, and shows the completion dialog.
+Contains the Swing interface. It displays numbered tiles or image tiles, handles image loading and display-mode changes, provides the game menu, and shows the completion dialog.
 
 ### `Main`
 
@@ -113,5 +110,3 @@ Starts the Swing application on the Event Dispatch Thread.
 ## License
 
 Created for educational purposes.
-
-[中文说明](README.zh-CN.md)
