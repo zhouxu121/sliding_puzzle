@@ -1,0 +1,138 @@
+name: Build Windows EXE
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+jobs:
+  build-windows:
+    name: Build Windows Installer
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Install WiX Toolset
+        shell: powershell
+        run: |
+          choco install wixtoolset --no-progress --yes
+
+          $wixPath = Get-ChildItem `
+            -Path "C:\Program Files (x86)\WiX Toolset*" `
+            -Directory `
+            -ErrorAction SilentlyContinue |
+            Sort-Object Name -Descending |
+            Select-Object -First 1
+
+          if ($null -eq $wixPath) {
+            throw "WiX Toolset installation directory was not found."
+          }
+
+          $wixBin = Join-Path $wixPath.FullName "bin"
+
+          if (-not (Test-Path $wixBin)) {
+            throw "WiX Toolset bin directory was not found: $wixBin"
+          }
+
+          $wixBin | Out-File `
+            -FilePath $env:GITHUB_PATH `
+            -Encoding utf8 `
+            -Append
+
+      - name: Create build directories
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path "build\classes"
+          New-Item -ItemType Directory -Force -Path "build\jar"
+          New-Item -ItemType Directory -Force -Path "build\installer"
+
+      - name: Compile Java source files
+        shell: powershell
+        run: |
+          $javaFiles = Get-ChildItem `
+            -Path "SlidingPuzzle" `
+            -Filter "*.java" `
+            -File |
+            ForEach-Object { $_.FullName }
+
+          if ($javaFiles.Count -eq 0) {
+            throw "No Java files were found in the SlidingPuzzle directory."
+          }
+
+          javac `
+            -encoding UTF-8 `
+            -d "build\classes" `
+            $javaFiles
+
+      - name: Create executable JAR
+        shell: powershell
+        run: |
+          jar `
+            --create `
+            --file "build\jar\Schiebepuzzle.jar" `
+            --main-class Main `
+            -C "build\classes" .
+
+      - name: Test executable JAR
+        shell: powershell
+        run: |
+          jar --describe-module --file "build\jar\Schiebepuzzle.jar"
+
+          if (-not (Test-Path "build\jar\Schiebepuzzle.jar")) {
+            throw "The executable JAR was not created."
+          }
+
+      - name: Create Windows EXE installer
+        shell: powershell
+        run: |
+          jpackage `
+            --type exe `
+            --name "Schiebepuzzle" `
+            --app-version "1.0.0" `
+            --vendor "Sliding Puzzle Project" `
+            --description "A sliding puzzle game written in Java" `
+            --input "build\jar" `
+            --main-jar "Schiebepuzzle.jar" `
+            --main-class "Main" `
+            --dest "build\installer" `
+            --win-menu `
+            --win-shortcut `
+            --win-dir-chooser
+
+      - name: Show generated files
+        shell: powershell
+        run: |
+          Get-ChildItem `
+            -Path "build\installer" `
+            -Recurse |
+            Format-Table FullName, Length
+
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Schiebepuzzle-Windows
+          path: build/installer/*.exe
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish installer to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/installer/*.exe
+          generate_release_notes: true
