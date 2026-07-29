@@ -11,12 +11,9 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Klasse GameFrame.
- * 
- * @author (Ihr Name) 
- * @version (eine Versionsnummer oder ein Datum)
- */
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 
 public class GameJFrame extends JFrame implements ActionListener
 {
@@ -52,13 +49,26 @@ public class GameJFrame extends JFrame implements ActionListener
      */
     private static final int IMAGE_SIZE = 600;
 
-    JMenuItem replayItem = new JMenuItem("重新游戏");
-    JMenuItem closeItem = new JMenuItem("关闭游戏");
-    JMenuItem einfachItem = new JMenuItem("简易 3*3");
-    JMenuItem mittelItem = new JMenuItem("中等 4*4");
-    JMenuItem schwerItem = new JMenuItem("困难 5*5");
-    JMenuItem imageItem = new JMenuItem("上传图片");
-    JMenuItem numberItem = new JMenuItem("显示数字");
+    private Locale currentLocale;
+    private ResourceBundle messages;
+
+    private JMenuBar menuBar;
+
+    private JMenu functionMenu;
+    private JMenu levelMenu;
+    private JMenu languageMenu;
+
+    private JMenuItem replayItem;
+    private JMenuItem closeItem;
+    private JMenuItem easyItem;
+    private JMenuItem mediumItem;
+    private JMenuItem hardItem;
+    private JMenuItem imageItem;
+    private JMenuItem numberItem;
+
+    private JMenuItem chineseItem;
+    private JMenuItem englishItem;
+    private JMenuItem germanItem;
 
     /**
      * Creates the game window and starts a new 3 * 3 game.
@@ -66,6 +76,9 @@ public class GameJFrame extends JFrame implements ActionListener
     public GameJFrame(){
         step = 0;
         size = 3;
+
+        currentLocale = Locale.SIMPLIFIED_CHINESE;
+        loadLanguage();
 
         initJFrame();
         initJMenuBar();
@@ -81,8 +94,6 @@ public class GameJFrame extends JFrame implements ActionListener
     private void initJFrame(){
         this.setSize(680,720);
 
-        this.setTitle("Schiebepuzzle");
-
         this.setLocationRelativeTo(null);
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -94,32 +105,56 @@ public class GameJFrame extends JFrame implements ActionListener
      * Creates the menu bar and registers the action listeners.
      */
     private void initJMenuBar(){
-        JMenuBar jMenuBar = new JMenuBar();
+        menuBar = new JMenuBar();
 
-        JMenu functionJMenu = new JMenu("功能");
-        JMenu level = new JMenu("难度");
+        functionMenu = new JMenu();
+        levelMenu = new JMenu();
+        languageMenu = new JMenu();
 
-        functionJMenu.add(level);
-        functionJMenu.add(replayItem);
-        functionJMenu.add(imageItem);
-        functionJMenu.add(closeItem);
-        functionJMenu.add(numberItem);
+        replayItem = new JMenuItem();
+        closeItem = new JMenuItem();
+        easyItem = new JMenuItem();
+        mediumItem = new JMenuItem();
+        hardItem = new JMenuItem();
+        imageItem = new JMenuItem();
+        numberItem = new JMenuItem();
 
-        level.add(einfachItem);
-        level.add(mittelItem);
-        level.add(schwerItem);
+        chineseItem = new JMenuItem("中文");
+        englishItem = new JMenuItem("English");
+        germanItem = new JMenuItem("Deutsch");
 
-        einfachItem.addActionListener(this);
-        mittelItem.addActionListener(this);
-        schwerItem.addActionListener(this);
+        levelMenu.add(easyItem);
+        levelMenu.add(mediumItem);
+        levelMenu.add(hardItem);
+
+        languageMenu.add(chineseItem);
+        languageMenu.add(englishItem);
+        languageMenu.add(germanItem);
+
+        functionMenu.add(levelMenu);
+        functionMenu.add(replayItem);
+        functionMenu.add(imageItem);
+        functionMenu.add(numberItem);
+        functionMenu.add(languageMenu);
+        functionMenu.addSeparator();
+        functionMenu.add(closeItem);
+
+        easyItem.addActionListener(this);
+        mediumItem.addActionListener(this);
+        hardItem.addActionListener(this);
         replayItem.addActionListener(this);
         closeItem.addActionListener(this);
         imageItem.addActionListener(this);
         numberItem.addActionListener(this);
 
-        jMenuBar.add(functionJMenu);
+        chineseItem.addActionListener(this);
+        englishItem.addActionListener(this);
+        germanItem.addActionListener(this);
 
-        this.setJMenuBar(jMenuBar);
+        menuBar.add(functionMenu);
+        setJMenuBar(menuBar);
+
+        updateTexts();
     }
 
     /**
@@ -146,7 +181,7 @@ public class GameJFrame extends JFrame implements ActionListener
 
         JPanel informationPanel = new JPanel();
 
-        stepCountLabel = new JLabel("步数: " + step);
+        stepCountLabel = new JLabel(messages.getString("label.steps") + ": " + step);
         stepCountLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
 
         informationPanel.add(stepCountLabel);
@@ -233,14 +268,14 @@ public class GameJFrame extends JFrame implements ActionListener
                 tile.setBackground(new Color(225, 225, 225));
 
                 /*
-                 * Keep borders in numer mode.
+                 * Keep borders in number mode.
                  */
                 tile.setBorder(new LineBorder(Color.DARK_GRAY));
             }
         }
 
         /*
-         * Each lable remembers its row and column through
+         * Each label remembers its row and column through
          * the local variables row and col.
          */
         tile.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -279,11 +314,22 @@ public class GameJFrame extends JFrame implements ActionListener
     }
 
     /**
-     * Displays a meesage after the puzzle has been solved.
+     * Displays a message after the puzzle has been solved.
      */
     private void showWinDialog() {
-        int result = JOptionPane.showConfirmDialog(this, 
-                "恭喜,你完成了拼图\n总步数: " + step + "\n是否开始新游戏?", "游戏完成", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+        String message = messages.getString("dialog.win.message")
+                + "\n"
+                + messages.getString("dialog.win.steps")
+                + " " + step
+                + "\n"
+                + messages.getString("dialog.win.restart");
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                message,
+                messages.getString("dialog.win.title"),
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.INFORMATION_MESSAGE);
 
         if(result == JOptionPane.YES_OPTION) {
             startNewGame(size);
@@ -293,14 +339,20 @@ public class GameJFrame extends JFrame implements ActionListener
     /**
      * Open a file chooser and allows the user to select an image.
      *
-     * Loading an image dose not create a new game.
+     * Loading an image does not create a new game.
      * The current board arrangement and step counter remain unchanged.
      */
     private void chooseImage(){
         JFileChooser chooser = new JFileChooser();
 
+        chooser.setDialogTitle(
+            messages.getString("dialog.image.title")
+            );
+
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "Image files(*.jpg, *.jpeg, *.png)", "jpg", "jpeg", "png");
+                messages.getString("dialog.image.filter"),
+                "jpg", "jpeg", "png"
+                );
 
         chooser.setFileFilter(filter);
         chooser.setAcceptAllFileFilterUsed(false);
@@ -320,7 +372,12 @@ public class GameJFrame extends JFrame implements ActionListener
              * file is not a supported image.
              */
             if(originalImage == null) {
-                JOptionPane.showMessageDialog(this, "无法读取所选择的图片.", "图片错误", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(
+                        this,
+                        messages.getString("dialog.image.invalid.message"),
+                        messages.getString("dialog.image.error.title"),
+                        JOptionPane.ERROR_MESSAGE
+                        );
                 return;
             }
 
@@ -340,12 +397,15 @@ public class GameJFrame extends JFrame implements ActionListener
              */
             drawGame();
         }catch(IOException exception) {
-            JOptionPane.showMessageDialog(this, "读取图片时发生错误:\n" + exception.getMessage(), "图片错误", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    this,
+                    messages.getString("dialog.image.error.message") + ": " + exception.getMessage(),
+                    messages.getString("dialog.image.error.title"), JOptionPane.ERROR_MESSAGE);
         }
     }
 
     /**
-     * Scales the selected image and divided it into puzzle pieces.
+     * Scales the selected image and divides it into puzzle pieces.
      *
      * getSubimage() is called only after a new scaled BufferedImage has been created
      * and drawn using Graphics.drawImage().
@@ -374,7 +434,7 @@ public class GameJFrame extends JFrame implements ActionListener
 
         int pieceSize = IMAGE_SIZE / size;
         /*
-         * Thr empty field does not need its own image piece,
+         * The empty field does not need its own image piece,
          * so only size * size - 1 pieces are created.
          */
         imagePieces = new BufferedImage[size * size - 1];
@@ -407,12 +467,12 @@ public class GameJFrame extends JFrame implements ActionListener
     public void actionPerformed(ActionEvent e){
         Object obj = e.getSource();
 
-        if(obj == einfachItem){
+        if(obj == easyItem){
             startNewGame(3);
-        }else if(obj == mittelItem){
+        }else if(obj == mediumItem){
             startNewGame(4);
 
-        }else if(obj == schwerItem){
+        }else if(obj == hardItem){
             startNewGame(5);
 
         }else if(obj == replayItem){
@@ -423,6 +483,43 @@ public class GameJFrame extends JFrame implements ActionListener
             chooseImage();
         }else if(obj == numberItem) {
             showNumbers();
+        }else if (obj == chineseItem) {
+            changeLanguage(Locale.SIMPLIFIED_CHINESE);
+        }else if (obj == englishItem) {
+            changeLanguage(Locale.ENGLISH);
+        }else if (obj == germanItem) {
+            changeLanguage(Locale.GERMAN);
+        }
+    }
+
+    private void changeLanguage(Locale locale) {
+        currentLocale = locale;
+        loadLanguage();
+        updateTexts();
+    }
+
+    private void loadLanguage() {
+        messages = ResourceBundle.getBundle("Messages", currentLocale);
+    }
+
+    private void updateTexts() {
+        setTitle(messages.getString("game.title"));
+
+        functionMenu.setText(messages.getString("menu.game"));
+        levelMenu.setText(messages.getString("menu.difficulty"));
+        languageMenu.setText(messages.getString("menu.language"));
+
+        replayItem.setText(messages.getString("menu.restart"));
+        closeItem.setText(messages.getString("menu.close"));
+        imageItem.setText(messages.getString("menu.image"));
+        numberItem.setText(messages.getString("menu.number"));
+
+        easyItem.setText(messages.getString("difficulty.easy"));
+        mediumItem.setText(messages.getString("difficulty.medium"));
+        hardItem.setText(messages.getString("difficulty.hard"));
+
+        if(stepCountLabel != null) {
+            stepCountLabel.setText(messages.getString("label.steps") + ": " + step);
         }
     }
 }

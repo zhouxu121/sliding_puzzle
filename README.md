@@ -6,9 +6,9 @@ A Java Swing implementation of the classic sliding-puzzle game. Play with number
 
 ## Current status
 
-**v1.1.0 — image-puzzle mode**
+**v1.2.0 — multilingual interface and improved image handling**
 
-The project provides a playable number-puzzle mode and an image-puzzle mode. Upload a JPG, JPEG, or PNG image to divide it into movable puzzle tiles; use **Show Numbers** to return to the numbered display without resetting the current game.
+The project provides a playable number-puzzle mode and an image-puzzle mode. The interface can be switched between Chinese, English, and German without resetting the current game. Image-loading errors, including invalid image files, are reported with localized messages.
 
 ## Features
 
@@ -18,6 +18,7 @@ The project provides a playable number-puzzle mode and an image-puzzle mode. Upl
 - Upload JPG, JPEG, and PNG images
 - Automatically scaled 600 × 600 image board with seamless tiles
 - Switch between image and number display without losing the current board state
+- Chinese, English, and German interface options
 - Tile movement validation and step counter
 - Difficulty selection and restart current game
 - Win detection and completion dialog
@@ -25,7 +26,7 @@ The project provides a playable number-puzzle mode and an image-puzzle mode. Upl
 
 ## Requirements
 
-- Java Development Kit (JDK) 8 or newer
+- Java Development Kit (JDK) 8 or newer; JDK 9 or newer is recommended for UTF-8 translations
 - BlueJ (optional)
 
 Check your Java installation:
@@ -66,7 +67,7 @@ java Main
 3. The tile moves into the empty field and the step counter increases.
 4. Arrange the tiles in ascending order from left to right and top to bottom.
 
-To play with an image, choose **Upload Image** from the menu and select a JPG, JPEG, or PNG file. The current arrangement and step count remain unchanged. Choose **Show Numbers** to switch back to the number-puzzle display.
+To play with an image, choose **Load Image** from the menu and select a JPG, JPEG, or PNG file. The current arrangement and step count remain unchanged. Choose **Show Numbers** to switch back to the number-puzzle display. Use the **Language** menu to change the interface language.
 
 Solved 3 × 3 board:
 
@@ -86,6 +87,7 @@ sliding_puzzle/
 │   ├── Main.java          # Application entry point
 │   ├── GameJFrame.java    # Swing user interface
 │   ├── GameModel.java     # Puzzle rules and board state
+│   ├── Messages*.properties # Localized user-interface text
 │   └── package.bluej      # BlueJ project configuration
 ├── .gitignore
 ├── README.md              # English
@@ -101,7 +103,7 @@ Contains the game logic. It creates a solved board, shuffles it through valid mo
 
 ### `GameJFrame`
 
-Contains the Swing interface. It displays numbered tiles or image tiles, handles image loading and display-mode changes, provides the game menu, and shows the completion dialog.
+Contains the Swing interface. It displays numbered tiles or image tiles, handles image loading and display-mode and language changes, provides the game menu, and shows the completion dialog.
 
 ### `Main`
 
