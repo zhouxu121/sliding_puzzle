@@ -1,14 +1,18 @@
-------------------------------------------------------------------------
-Dies ist die README-Datei des Projekts. Hier sollten Sie Ihr Projekt
-beschreiben.
-Erzählen Sie dem Leser (jemand, der nichts über dieses Projekt weiss),
-alles, was er/sie wissen muss. Üblicherweise sollte der Kommentar 
-zumindest die folgenden Angaben umfassen:
-------------------------------------------------------------------------
+PROJEKTBEZEICHNUNG: Schiebepuzzle
 
-PROJEKTBEZEICHNUNG:
 PROJEKTZWECK:
-VERSION oder DATUM:
+Ein Java-Swing-Schiebepuzzle mit Zahlen- und Bildmodus. Das Spielfeld kann
+3 × 3, 4 × 4 oder 5 × 5 Felder haben. Die Benutzeroberfläche unterstützt
+Chinesisch, Englisch und Deutsch.
+
+VERSION oder DATUM: v1.2.0, 2026-07-29
+
 WIE IST DAS PROJEKT ZU STARTEN:
-AUTOR(EN):
+Das Verzeichnis "SlidingPuzzle" in BlueJ als Projekt öffnen, alle Klassen
+kompilieren und anschließend Main.main(String[] args) ausführen.
+
+AUTOR(EN): zx
+
 BENUTZERHINWEISE:
+Über das Menü kann der Schwierigkeitsgrad geändert, ein Bild geladen und die
+Sprache umgeschaltet werden. Das Bildladen unterbricht das laufende Spiel nicht.

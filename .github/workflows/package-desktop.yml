@@ -86,6 +86,7 @@ jobs:
         run: |
           mkdir -p build/ci/classes build/ci/input artifacts/native
           javac -d build/ci/classes SlidingPuzzle/*.java
+          cp SlidingPuzzle/Messages*.properties build/ci/classes/
           jar --create --file build/ci/input/SlidingPuzzle.jar --main-class Main -C build/ci/classes .
 
       - name: Create native installer

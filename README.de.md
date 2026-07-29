@@ -6,9 +6,9 @@ Eine Java-Swing-Umsetzung des klassischen Schiebepuzzles. Das Spiel kann mit Zah
 
 ## Aktueller Stand
 
-**v1.1.0 — Bildpuzzle-Modus**
+**v1.2.0 — mehrsprachige Oberfläche und verbesserte Bildfehlerbehandlung**
 
-Das Projekt bietet einen spielbaren Zahlen- und Bildpuzzle-Modus. Über **Bild hochladen** kann ein JPG-, JPEG- oder PNG-Bild ausgewählt und in bewegliche Puzzleteile geteilt werden. Mit **Zahlen anzeigen** wird zur Zahlendarstellung zurückgewechselt, ohne das laufende Spiel zurückzusetzen.
+Das Projekt bietet einen spielbaren Zahlen- und Bildpuzzle-Modus. Die Oberfläche kann ohne Zurücksetzen des laufenden Spiels zwischen Chinesisch, Englisch und Deutsch umgeschaltet werden. Ungültige oder nicht lesbare Bilddateien führen zu einer lokalisierten Fehlermeldung.
 
 ## Funktionen
 
@@ -18,6 +18,7 @@ Das Projekt bietet einen spielbaren Zahlen- und Bildpuzzle-Modus. Über **Bild h
 - Unterstützung für JPG-, JPEG- und PNG-Bilder
 - Automatisch auf 600 × 600 skalierte Bildfläche ohne Zwischenräume
 - Wechsel zwischen Bild- und Zahlendarstellung ohne Verlust des aktuellen Spielstands
+- Benutzeroberfläche auf Chinesisch, Englisch und Deutsch
 - Prüfung gültiger Züge und Schrittzähler
 - Schwierigkeitsauswahl und Neustart des aktuellen Spiels
 - Gewinnerkennung mit Abschlussdialog
@@ -25,7 +26,7 @@ Das Projekt bietet einen spielbaren Zahlen- und Bildpuzzle-Modus. Über **Bild h
 
 ## Voraussetzungen
 
-- Java Development Kit (JDK) 8 oder neuer
+- Java Development Kit (JDK) 8 oder neuer; für UTF-8-Übersetzungen wird JDK 9 oder neuer empfohlen
 - BlueJ (optional)
 
 Java-Installation prüfen:
@@ -66,7 +67,7 @@ java Main
 3. Das Teil bewegt sich in das leere Feld und der Schrittzähler steigt.
 4. Alle Teile von links nach rechts und von oben nach unten anordnen, um das Puzzle zu lösen.
 
-Für ein Bildpuzzle im Menü **Bild hochladen** wählen und eine JPG-, JPEG- oder PNG-Datei auswählen. Die aktuelle Anordnung und Schrittzahl bleiben erhalten. Mit **Zahlen anzeigen** wird wieder die Zahlendarstellung angezeigt.
+Für ein Bildpuzzle im Menü **Bild laden** wählen und eine JPG-, JPEG- oder PNG-Datei auswählen. Die aktuelle Anordnung und Schrittzahl bleiben erhalten. Mit **Zahlen anzeigen** wird wieder die Zahlendarstellung angezeigt. Über das Menü **Sprache** kann die Oberflächensprache geändert werden.
 
 Gelöstes 3-×-3-Puzzle:
 
@@ -86,6 +87,7 @@ sliding_puzzle/
 │   ├── Main.java          # Programmeinstieg
 │   ├── GameJFrame.java    # Swing-Benutzeroberfläche
 │   ├── GameModel.java     # Puzzle-Regeln und Spielfeldzustand
+│   ├── Messages*.properties # Übersetzte Oberflächentexte
 │   └── package.bluej      # BlueJ-Projektkonfiguration
 ├── .gitignore
 ├── README.md              # Englisch
@@ -101,7 +103,7 @@ Enthält die Spiellogik. Die Klasse erstellt ein gelöstes Spielfeld, mischt es 
 
 ### `GameJFrame`
 
-Enthält die Swing-Oberfläche. Die Klasse zeigt Zahlen- oder Bildteile an, verarbeitet das Laden von Bildern und den Wechsel der Darstellung, stellt das Spielmenü bereit und zeigt den Abschlussdialog.
+Enthält die Swing-Oberfläche. Die Klasse zeigt Zahlen- oder Bildteile an, verarbeitet das Laden von Bildern sowie den Wechsel von Darstellung und Sprache, stellt das Spielmenü bereit und zeigt den Abschlussdialog.
 
 ### `Main`
 
