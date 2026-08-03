@@ -77,7 +77,7 @@ public class GameJFrame extends JFrame implements ActionListener
         step = 0;
         size = 3;
 
-        currentLocale = Locale.SIMPLIFIED_CHINESE;
+        currentLocale = Locale.ENGLISH;
         loadLanguage();
 
         initJFrame();
@@ -131,11 +131,9 @@ public class GameJFrame extends JFrame implements ActionListener
         languageMenu.add(englishItem);
         languageMenu.add(germanItem);
 
-        functionMenu.add(levelMenu);
         functionMenu.add(replayItem);
         functionMenu.add(imageItem);
         functionMenu.add(numberItem);
-        functionMenu.add(languageMenu);
         functionMenu.addSeparator();
         functionMenu.add(closeItem);
 
@@ -152,6 +150,8 @@ public class GameJFrame extends JFrame implements ActionListener
         germanItem.addActionListener(this);
 
         menuBar.add(functionMenu);
+        menuBar.add(levelMenu);
+        menuBar.add(languageMenu);
         setJMenuBar(menuBar);
 
         updateTexts();
