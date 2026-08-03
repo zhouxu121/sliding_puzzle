@@ -28,8 +28,6 @@ jobs:
             extension: dmg
           - name: Windows
             runner: windows-latest
-            package_type: msi
-            extension: msi
           - name: Linux
             runner: ubuntu-latest
             package_type: deb
@@ -75,29 +73,6 @@ jobs:
           distribution: temurin
           java-version: "21"
 
-      - name: Install WiX for Windows installers
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          function Get-WixBin {
-            Get-ChildItem -Path ${env:ProgramFiles(x86)} -Directory -Filter "WiX Toolset v3.*" |
-              ForEach-Object { Join-Path $_.FullName "bin" } |
-              Where-Object { Test-Path (Join-Path $_ "candle.exe") } |
-              Select-Object -First 1
-          }
-
-          $wix_bin = Get-WixBin
-          if (!$wix_bin) {
-            choco install wixtoolset --no-progress --yes
-            $wix_bin = Get-WixBin
-          }
-
-          if (!$wix_bin) {
-            throw "A WiX Toolset 3 installation with candle.exe could not be found."
-          }
-
-          $wix_bin | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
       - name: Install Linux packaging dependencies
         if: runner.os == 'Linux'
         shell: bash
@@ -113,7 +88,8 @@ jobs:
           cp SlidingPuzzle/Messages*.properties build/ci/classes/
           jar --create --file build/ci/input/SlidingPuzzle.jar --main-class Main -C build/ci/classes .
 
-      - name: Create native installer
+      - name: Create macOS or Linux package
+        if: runner.os != 'Windows'
         shell: bash
         run: |
           jpackage \
@@ -131,6 +107,27 @@ jobs:
           if [ "$package_path" != "$package_name" ]; then
             mv "$package_path" "$package_name"
           fi
+
+      - name: Create portable Windows application
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          jpackage `
+            --type app-image `
+            --name SlidingPuzzle `
+            --app-version $env:APP_VERSION `
+            --input build/ci/input `
+            --main-jar SlidingPuzzle.jar `
+            --main-class Main `
+            --dest build/ci/windows-app-image
+
+          $appDirectory = "build/ci/windows-app-image/SlidingPuzzle"
+          $executable = Join-Path $appDirectory "SlidingPuzzle.exe"
+          if (!(Test-Path $executable)) {
+            throw "The Windows executable was not created: $executable"
+          }
+
+          Compress-Archive -Path $appDirectory -DestinationPath "artifacts/native/SlidingPuzzle-$env:APP_VERSION-windows-x64.zip"
 
       - name: Create portable Linux package
         if: runner.os == 'Linux'

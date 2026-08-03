@@ -36,6 +36,10 @@ java --version
 javac --version
 ```
 
+## Windows 便携版
+
+在 GitHub Release 中下载 `SlidingPuzzle-<版本号>-windows-x64.zip`，解压后直接双击其中的 `SlidingPuzzle.exe` 即可运行，无需安装。请保留 `.exe` 所在的整个文件夹，因为其中包含程序所需的 Java 运行时文件。
+
 ## 从源码运行
 
 克隆仓库：
