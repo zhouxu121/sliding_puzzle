@@ -314,6 +314,8 @@ public class GameJFrame extends JFrame implements ActionListener
             }
         }
 
+        // The information panel is not rebuilt after a normal move.
+        stepCountLabel.setText(messages.getString("label.steps") + ": " + step);
         boardPanel.repaint();
     }
 
