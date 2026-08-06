@@ -17,6 +17,8 @@ import java.util.ResourceBundle;
 
 public class GameJFrame extends JFrame implements ActionListener
 {
+    private static final long serialVersionUID = 1L;
+
     private int step;
     private int size;
 
@@ -24,6 +26,7 @@ public class GameJFrame extends JFrame implements ActionListener
 
     private JLabel stepCountLabel;
     private JPanel boardPanel;
+    private JLabel[][] tiles;
 
     /*
      * The original image selected by the user.
@@ -77,7 +80,7 @@ public class GameJFrame extends JFrame implements ActionListener
         step = 0;
         size = 3;
 
-        currentLocale = Locale.SIMPLIFIED_CHINESE;
+        currentLocale = Locale.ENGLISH;
         loadLanguage();
 
         initJFrame();
@@ -131,11 +134,9 @@ public class GameJFrame extends JFrame implements ActionListener
         languageMenu.add(englishItem);
         languageMenu.add(germanItem);
 
-        functionMenu.add(levelMenu);
         functionMenu.add(replayItem);
         functionMenu.add(imageItem);
         functionMenu.add(numberItem);
-        functionMenu.add(languageMenu);
         functionMenu.addSeparator();
         functionMenu.add(closeItem);
 
@@ -152,6 +153,8 @@ public class GameJFrame extends JFrame implements ActionListener
         germanItem.addActionListener(this);
 
         menuBar.add(functionMenu);
+        menuBar.add(levelMenu);
+        menuBar.add(languageMenu);
         setJMenuBar(menuBar);
 
         updateTexts();
@@ -222,9 +225,12 @@ public class GameJFrame extends JFrame implements ActionListener
      * Creates all number fields according to the current model state.
      */
     private void createNumberTiles(){
+        tiles = new JLabel[size][size];
+
         for(int row = 0; row < size; row++) {
             for(int col = 0; col < size; col++) {
                 JLabel tile = createTile(row, col);
+                tiles[row][col] = tile;
                 boardPanel.add(tile);
             }
         }
@@ -238,6 +244,27 @@ public class GameJFrame extends JFrame implements ActionListener
 
         tile.setOpaque(true);
         tile.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 32));
+
+        updateTile(tile, row, col);
+
+        /*
+         * Each label remembers its row and column through
+         * the local variables row and col.
+         */
+        tile.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent event){
+                    handleTileClick(row, col);
+                }
+            });
+
+        return tile;
+    }
+
+    /**
+     * Updates the visual state of one existing puzzle field.
+     */
+    private void updateTile(JLabel tile, int row, int col) {
 
         /*
          * No border between the image pieces.
@@ -274,18 +301,20 @@ public class GameJFrame extends JFrame implements ActionListener
             }
         }
 
-        /*
-         * Each label remembers its row and column through
-         * the local variables row and col.
-         */
-        tile.addMouseListener(new java.awt.event.MouseAdapter() {
-                @Override
-                public void mouseClicked(java.awt.event.MouseEvent event){
-                    handleTileClick(row, col);
-                }
-            });
+    }
 
-        return tile;
+    /**
+     * Refreshes the existing labels after a valid move.
+     * Reusing the labels avoids rebuilding the complete Swing hierarchy.
+     */
+    private void refreshTiles() {
+        for(int row = 0; row < size; row++) {
+            for(int col = 0; col < size; col++) {
+                updateTile(tiles[row][col], row, col);
+            }
+        }
+
+        boardPanel.repaint();
     }
 
     /**
@@ -306,7 +335,7 @@ public class GameJFrame extends JFrame implements ActionListener
 
         step++;
 
-        drawGame();
+        refreshTiles();
 
         if(model.isSolved()) {
             showWinDialog();

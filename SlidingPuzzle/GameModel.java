@@ -1,4 +1,7 @@
 
+import java.util.Objects;
+import java.util.Random;
+
 /**
  * Represents the game logic of a sliding puzzle.
  * 
@@ -6,15 +9,18 @@
  */
 public class GameModel
 {
-    // Interval value used to represent the empty field.
+    // Sentinel value used to represent the empty field.
     private static final int EMPTY = -1;
 
     // Number of rows and columns of the square board.
     // Valid values are 3, 4, 5.
-    private int size;
+    private final int size;
 
     // Stores the values of all puzzle field.
-    private int[][] board;
+    private final int[][] board;
+
+    // Random source used to choose valid shuffle moves.
+    private final Random random;
 
     // current row position of the empty field.
     private int emptyRow;
@@ -33,12 +39,26 @@ public class GameModel
      */
 
     public GameModel(int size) {
+        this(size, new Random());
+    }
+
+    /**
+     * Creates a new puzzle with a supplied random source.
+     *
+     * Keeping this constructor package-private makes the model deterministic
+     * in automated tests without exposing randomness to the user interface.
+     *
+     * @param size the number of rows and columns
+     * @param random random source used while shuffling
+     */
+    GameModel(int size, Random random) {
         if(size < 3 || size > 5) {
             throw new IllegalArgumentException("Size must be 3, 4 or 5.");
         }
 
         this.size = size;
-        board = new int[size][size];
+        this.random = Objects.requireNonNull(random, "Random source must not be null.");
+        this.board = new int[size][size];
 
         initializeSolvedBoard();
         shuffle();
@@ -74,69 +94,39 @@ public class GameModel
      * Using valid moves guarantees that the resulting puzzle can always be solved.
      */
     private void shuffle() {
-        /**
-         * Possible movement directions:
-         * 
-         * index 0: up
-         * index 1: down
-         * index 2: left
-         * index 3: right
-         */
         int[] rowDirections = {-1, 1, 0, 0};
         int[] colDirections = {0, 0, -1, 1};
-        
-        /**
-         * Stores the previous position of the empty field.
-         * This prevents the next random move from immediately
-         * undoing the previous move.
-         */
-        int previousEmptyRow = -1;
-        int previousEmptyCol = -1;
-        
-        int shuffleMoves = size * size * 100;
-        int performedMoves = 0;
-        
-        while(performedMoves < shuffleMoves) {
-            int direction = (int) (Math.random() * 4);
-            
-            /**
-             * A tile at this target position would move
-             * into the current empty field.
-             */
-            int targetRow = emptyRow + rowDirections[direction];
-            int targetCol = emptyCol + colDirections[direction];
-            
-            // Ignore positions outside the board.
-            if(!isInsideBoard(targetRow, targetCol)) {
-                continue;
+
+        do {
+            // Avoid immediately reversing the previous valid move.
+            int previousEmptyRow = -1;
+            int previousEmptyCol = -1;
+            int shuffleMoves = size * size * 100;
+            int performedMoves = 0;
+
+            while(performedMoves < shuffleMoves) {
+                int direction = random.nextInt(4);
+                int targetRow = emptyRow + rowDirections[direction];
+                int targetCol = emptyCol + colDirections[direction];
+
+                // Ignore positions outside the board.
+                if(!isInsideBoard(targetRow, targetCol)) {
+                    continue;
+                }
+
+                if(targetRow == previousEmptyRow && targetCol == previousEmptyCol) {
+                    continue;
+                }
+
+                int oldEmptyRow = emptyRow;
+                int oldEmptyCol = emptyCol;
+                move(targetRow, targetCol);
+
+                previousEmptyRow = oldEmptyRow;
+                previousEmptyCol = oldEmptyCol;
+                performedMoves++;
             }
-            
-            /**
-             * Avoid immediately reversing the previous move.
-             * This produces a better shuffled board.
-             */
-            if(targetRow == previousEmptyRow && targetCol == previousEmptyCol) {
-                continue;
-            }
-            
-            int oldEmptyRow = emptyRow;
-            int oldEmptyCol = emptyCol;
-            
-            move(targetRow, targetCol);
-            
-            previousEmptyRow = oldEmptyRow;
-            previousEmptyCol = oldEmptyCol;
-            
-            performedMoves++;
-        }
-        
-        /**
-         * In the unlikely case that the board returns to 
-         * the solved state, shuffle it again.
-         */
-        if(isSolved()) {
-            shuffle();
-        }
+        } while(isSolved());
     }
     
     
