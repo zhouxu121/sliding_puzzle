@@ -6,9 +6,17 @@ Eine Java-Swing-Umsetzung des klassischen Schiebepuzzles. Das Spiel kann mit Zah
 
 ## Aktueller Stand
 
-**v1.2.0 — mehrsprachige Oberfläche und verbesserte Bildfehlerbehandlung**
+**v1.2.1 — stabile Version**
 
-Das Projekt bietet einen spielbaren Zahlen- und Bildpuzzle-Modus. Die Oberfläche kann ohne Zurücksetzen des laufenden Spiels zwischen Chinesisch, Englisch und Deutsch umgeschaltet werden. Ungültige oder nicht lesbare Bilddateien führen zu einer lokalisierten Fehlermeldung.
+Das Projekt bietet einen spielbaren Zahlen- und Bildpuzzle-Modus. Die Oberfläche kann ohne Zurücksetzen des laufenden Spiels zwischen Chinesisch, Englisch und Deutsch umgeschaltet werden. Ungültige oder nicht lesbare Bilddateien führen zu einer lokalisierten Fehlermeldung. Version 1.2.1 aktualisiert außerdem den Schrittzähler unmittelbar nach jedem gültigen Zug.
+
+## Versionshinweise
+
+### v1.2.1 — 2026-08-06
+
+- Fehlerbehebung: Der Schrittzähler wird nach jedem gültigen Zug sofort aktualisiert.
+- Optimierung: Beim Verschieben werden vorhandene Feld-Labels aktualisiert, statt die gesamte Spieloberfläche neu aufzubauen.
+- Optimierung: Die Mischlogik des Spielmodells ist besser testbar und erzeugt weiterhin lösbare Puzzles.
 
 ## Funktionen
 

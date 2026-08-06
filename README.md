@@ -6,9 +6,17 @@ A Java Swing implementation of the classic sliding-puzzle game. Play with number
 
 ## Current status
 
-**v1.2.0 — multilingual interface and improved image handling**
+**v1.2.1 — stable release**
 
-The project provides a playable number-puzzle mode and an image-puzzle mode. The interface can be switched between Chinese, English, and German without resetting the current game. Image-loading errors, including invalid image files, are reported with localized messages.
+The project provides a playable number-puzzle mode and an image-puzzle mode. The interface can be switched between Chinese, English, and German without resetting the current game. Image-loading errors, including invalid image files, are reported with localized messages. Version 1.2.1 also updates the step counter immediately after every valid move.
+
+## Release notes
+
+### v1.2.1 — 2026-08-06
+
+- Fixed the step counter so it refreshes immediately after each valid tile move.
+- Updated existing tile labels instead of rebuilding the complete game interface after every move.
+- Improved the puzzle model's shuffle implementation for clearer, deterministic testing while preserving solvable puzzles.
 
 ## Features
 
