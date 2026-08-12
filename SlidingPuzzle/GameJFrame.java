@@ -14,18 +14,39 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-
+/**
+ * Main graphical user interface for the sliding puzzle game.
+ * 
+ * Resposibilities of this class:
+ * - create and display the Swing window and menus,
+ * - render the current state provided by {@link GameModel},
+ * - react the mouse clicks and menu actions,
+ * - count the player's valid moves,
+ * - switch between number mode and image mode,
+ * - load all visible tests from ResourceBundle files for internationalization.
+ * 
+ * The actual puzzle rules are intentionally kept in GameModel.
+ */
 public class GameJFrame extends JFrame implements ActionListener
 {
     private static final long serialVersionUID = 1L;
 
+    // Number of valid tile moves made in the current game.
     private int step;
+    
+    // Current board dimension. Supported values are 3, 4 and 5.
     private int size;
 
+    // Model object that stores the board state and implements the game rules.
     private GameModel model;
 
+    // Label that displays the current number of moves.
     private JLabel stepCountLabel;
+    
+    // Panel that contains all puzzle tiles in a GridLayout.
     private JPanel boardPanel;
+    
+    // References to the existing tile labels so they can be refreshed efficiently.
     private JLabel[][] tiles;
 
     /*
@@ -52,9 +73,13 @@ public class GameJFrame extends JFrame implements ActionListener
      */
     private static final int IMAGE_SIZE = 600;
 
+    // Language currently used by the interface.
     private Locale currentLocale;
+    
+    // Provides translated UI texts from Messages_*.properties files.
     private ResourceBundle messages;
 
+    // Menu components are stored as fields because their texts can change at runtime.
     private JMenuBar menuBar;
 
     private JMenu functionMenu;
@@ -74,7 +99,8 @@ public class GameJFrame extends JFrame implements ActionListener
     private JMenuItem germanItem;
 
     /**
-     * Creates the game window and starts a new 3 * 3 game.
+     * Creates the game window, loads the default language,
+     * builds the menu bar and starts a new 3 * 3 game.
      */
     public GameJFrame(){
         step = 0;
@@ -92,7 +118,8 @@ public class GameJFrame extends JFrame implements ActionListener
     }
 
     /**
-     * Initializes the main window.
+     * Configures the basic JFrame properties such as size, layout,
+     * close operation and initial screen position.
      */
     private void initJFrame(){
         this.setSize(680,720);
@@ -105,7 +132,8 @@ public class GameJFrame extends JFrame implements ActionListener
     }
 
     /**
-     * Creates the menu bar and registers the action listeners.
+     * Creates all menus and menu items, adds item to the menu bar,
+     * registers this frame as their ActionListener and applies translated texts.
      */
     private void initJMenuBar(){
         menuBar = new JMenuBar();
@@ -161,7 +189,10 @@ public class GameJFrame extends JFrame implements ActionListener
     }
 
     /**
-     * Creates a new game with the selected board size.
+     * Creates a fresh shuffled puzzle with the selected board size.
+     * 
+     * The step counter is reset. If an image is currently active, the same
+     * image is divided again so that its pieces match the new board size.
      */
     private void startNewGame(int newSize) {
         size = newSize;
@@ -177,7 +208,11 @@ public class GameJFrame extends JFrame implements ActionListener
     }
 
     /**
-     * Redraws the complete game interface.
+     * Rebuilds the visible game area from the current model state.
+     * 
+     * This method is used after structural changes such as starting a new game,
+     * loading an image or switching back to number mode. Normal tile moves use
+     * refreshTiles() instead, which is cheaper bacause it reuses existing labels.
      */
     private void drawGame() {
         getContentPane().removeAll();
@@ -237,7 +272,12 @@ public class GameJFrame extends JFrame implements ActionListener
     }
 
     /**
-     * Creates one clickable puzzle field.
+     * Creates one clickable JLabel for a specific board position.
+     * The label receices a mouse listener that forwards clicks to handleTileClick().
+     * 
+     * @param row row of this tile in the board
+     * @param col column of this tile in the board
+     * @return configured JLabel representing the tile
      */
     private JLabel createTile(final int row, final int col) {
         JLabel tile = new JLabel("", SwingConstants.CENTER);
@@ -262,7 +302,14 @@ public class GameJFrame extends JFrame implements ActionListener
     }
 
     /**
-     * Updates the visual state of one existing puzzle field.
+     * Updates one existing tile lable so that it matches the model state.
+     * 
+     * Empty positions are shown as blank with fields. Non-empty positions show
+     * either a number or the corresponding image piece depending on imageMode.
+     * 
+     * @param tile label that should be updated
+     * @param row row represented by the label
+     * @param col column represented by the label
      */
     private void updateTile(JLabel tile, int row, int col) {
 
@@ -290,8 +337,8 @@ public class GameJFrame extends JFrame implements ActionListener
                 tile.setIcon(new ImageIcon(imagePieces[value]));
                 tile.setBackground(Color.WHITE);
             }else {
-                tile.setIcon(null);
                 tile.setText(String.valueOf(model.getValueAt(row, col)));
+                tile.setIcon(null);
                 tile.setBackground(new Color(225, 225, 225));
 
                 /*
@@ -345,7 +392,7 @@ public class GameJFrame extends JFrame implements ActionListener
     }
 
     /**
-     * Displays a message after the puzzle has been solved.
+     * Shows the localized win dialog and optionally starts another game.
      */
     private void showWinDialog() {
         String message = messages.getString("dialog.win.message")
@@ -482,7 +529,8 @@ public class GameJFrame extends JFrame implements ActionListener
     }
 
     /**
-     * Switches from image display back to number display.
+     * Switches from image display back to number display without changing the puzzle state.
+     * 
      *
      * The current game state remains unchanged.
      */
@@ -492,7 +540,9 @@ public class GameJFrame extends JFrame implements ActionListener
     }
 
     /**
-     * Handles all menu actions.
+     * Handles all menu actions from the Game, Difficulty and Language menus.
+     * 
+     * @param e Swing event describing which menu item was selected
      */
     @Override
     public void actionPerformed(ActionEvent e){
@@ -523,16 +573,30 @@ public class GameJFrame extends JFrame implements ActionListener
         }
     }
 
+    /**
+     * Changes the active UI language and immediately updates visible texts.
+     * 
+     * @param locale locale whose resource bundle should be loaded
+     */
     private void changeLanguage(Locale locale) {
         currentLocale = locale;
         loadLanguage();
         updateTexts();
     }
 
+    /**
+     * Loads the ResourceBundle that matches currentLocale.
+     * Java automatically chooses files such as Messages_en.properties,
+     * Messages_de.properties or Message_zh.properties.
+     */
     private void loadLanguage() {
         messages = ResourceBundle.getBundle("Messages", currentLocale);
     }
 
+    /**
+     * Applies the currently loaded translations to the window title, menus,
+     * menu items and step counter. The current game state is not modified.
+     */
     private void updateTexts() {
         setTitle(messages.getString("game.title"));
 

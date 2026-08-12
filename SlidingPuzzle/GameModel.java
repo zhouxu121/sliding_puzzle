@@ -1,4 +1,3 @@
-
 import java.util.Objects;
 import java.util.Random;
 
@@ -6,6 +5,8 @@ import java.util.Random;
  * Represents the game logic of a sliding puzzle.
  * 
  * This class does not contain any Swing or GUI code.
+ * It only stores the board state and implements the rules of the puzzle.
+ * Keeping the model separate from the GUI makes the logic easier to test and reuse.
  */
 public class GameModel
 {
@@ -16,7 +17,7 @@ public class GameModel
     // Valid values are 3, 4, 5.
     private final int size;
 
-    // Stores the values of all puzzle field.
+    // Stores the values of every puzzle field. EMPTY marks the blank position.
     private final int[][] board;
 
     // Random source used to choose valid shuffle moves.
@@ -94,6 +95,10 @@ public class GameModel
      * Using valid moves guarantees that the resulting puzzle can always be solved.
      */
     private void shuffle() {
+        /*
+         * Four possible directions around the empty field:
+         * up, down, left and right.
+         */
         int[] rowDirections = {-1, 1, 0, 0};
         int[] colDirections = {0, 0, -1, 1};
 
@@ -105,6 +110,7 @@ public class GameModel
             int performedMoves = 0;
 
             while(performedMoves < shuffleMoves) {
+                // Randomly choose one of the four neighboring directions.
                 int direction = random.nextInt(4);
                 int targetRow = emptyRow + rowDirections[direction];
                 int targetCol = emptyCol + colDirections[direction];
@@ -118,12 +124,18 @@ public class GameModel
                     continue;
                 }
 
+                /*
+                 * Remember the old empty position so the next shuffle step
+                 * does not immediately undo this move.
+                 */
                 int oldEmptyRow = emptyRow;
                 int oldEmptyCol = emptyCol;
                 move(targetRow, targetCol);
 
                 previousEmptyRow = oldEmptyRow;
                 previousEmptyCol = oldEmptyCol;
+                
+                
                 performedMoves++;
             }
         } while(isSolved());
@@ -145,6 +157,10 @@ public class GameModel
             return false;
         }
         
+        /*
+         * Copy the selected tile into the empty position, then mark the
+         * selected tile's old position as the new empty field.
+         */
         board[emptyRow][emptyCol] = board[row][col];
         board[row][col] = EMPTY;
         
@@ -175,6 +191,10 @@ public class GameModel
             return false;
         }
         
+        /*
+         * Manhattan distance is used to check whether the selected tile
+         * is orthogonally adjacent to the empty field.
+         */
         int rowDistance = Math.abs(row - emptyRow);
         int colDistance = Math.abs(col - emptyCol);
         
@@ -187,6 +207,10 @@ public class GameModel
     
     /**
      * Checks whether a position is located inside the board.
+     * 
+     * @param row row to validate
+     * @param col column to validate
+     * @return true if the position belongs to the board
      */
     private boolean isInsideBoard(int row, int col) {
         return row >= 0 && row < size && col >= 0 && col < size;
@@ -238,6 +262,10 @@ public class GameModel
     
     /**
      * Checks whether the specified field is empty
+     * 
+     * @param row requested row
+     * @param col requested column
+     * @return true if the position contains the EMPTY marker
      */
     public boolean isEmpty(int row, int col) {
         return getValueAt(row, col) == EMPTY;
@@ -245,6 +273,8 @@ public class GameModel
     
     /**
      * Returns the size of the square board.
+     * 
+     * @return number of rows and columns
      */
     public int getSize() {
         return size;
