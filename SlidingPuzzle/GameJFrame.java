@@ -17,13 +17,13 @@ import java.util.ResourceBundle;
 /**
  * Main graphical user interface for the sliding puzzle game.
  * 
- * Resposibilities of this class:
+ * Responsibilities of this class:
  * - create and display the Swing window and menus,
  * - render the current state provided by {@link GameModel},
- * - react the mouse clicks and menu actions,
+ * - react to mouse clicks and menu actions,
  * - count the player's valid moves,
  * - switch between number mode and image mode,
- * - load all visible tests from ResourceBundle files for internationalization.
+ * - load all visible texts from ResourceBundle files for internationalization.
  * 
  * The actual puzzle rules are intentionally kept in GameModel.
  */
@@ -302,7 +302,7 @@ public class GameJFrame extends JFrame implements ActionListener
     }
 
     /**
-     * Updates one existing tile lable so that it matches the model state.
+     * Updates one existing tile label so that it matches the model state.
      * 
      * Empty positions are shown as blank with fields. Non-empty positions show
      * either a number or the corresponding image piece depending on imageMode.
@@ -415,7 +415,7 @@ public class GameJFrame extends JFrame implements ActionListener
     }
 
     /**
-     * Open a file chooser and allows the user to select an image.
+     * Opens a file chooser and allows the user to select an image.
      *
      * Loading an image does not create a new game.
      * The current board arrangement and step counter remain unchanged.
