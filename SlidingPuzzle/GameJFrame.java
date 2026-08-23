@@ -212,7 +212,7 @@ public class GameJFrame extends JFrame implements ActionListener
      * 
      * This method is used after structural changes such as starting a new game,
      * loading an image or switching back to number mode. Normal tile moves use
-     * refreshTiles() instead, which is cheaper bacause it reuses existing labels.
+     * refreshTiles() instead, which is cheaper because it reuses existing labels.
      */
     private void drawGame() {
         getContentPane().removeAll();
@@ -273,7 +273,7 @@ public class GameJFrame extends JFrame implements ActionListener
 
     /**
      * Creates one clickable JLabel for a specific board position.
-     * The label receices a mouse listener that forwards clicks to handleTileClick().
+     * The label receives a mouse listener that forwards clicks to handleTileClick().
      * 
      * @param row row of this tile in the board
      * @param col column of this tile in the board
